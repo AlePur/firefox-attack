@@ -1,6 +1,5 @@
 # firefox-attack
 Hijack proxy-failover browser feature to introduce an unsigned, malicious, hidden extension. 👍 
-火狐浏览器键盘记录器
 
 Proxy Failover seems the most useless of these features. The following features can be seen in `about:support`:
 ![image](https://user-images.githubusercontent.com/35966625/152403536-b9a054fe-ce01-415e-9f72-db51be717c6d.png)
